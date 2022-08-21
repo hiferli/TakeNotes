@@ -4,12 +4,14 @@ This file has the routes of all the pages where the
 user would be going
 '''
 
-from flask import Blueprint , render_template , flash , request
+from flask import Blueprint , render_template , flash , request , jsonify
 
 from flask_login import login_required , current_user
 
 from .models import Note
 from . import db
+
+import json
 
 views = Blueprint('views' , __name__);
 
@@ -29,5 +31,18 @@ def home():
             flash("Note Added!" , category="success")
 
     return render_template("home.html" , user = current_user);
+
+@views.route("/delete-note" , methods = ["POST"])
+def delete_note():
+    note = json.loads(request.data);
+    noteID = note["noteID"];
+    note = Note.query.get(noteID)
+
+    if note:
+        if note.user_id == current_user.id:
+            db.session.delete(note);
+            db.session.commit();
+            
+    return jsonify({})
 
 
