@@ -1,6 +1,8 @@
 # This file deals with the authentication of the users
 
 from flask import Blueprint , render_template , request , flash , redirect , url_for
+
+from Webpages import views
 from .models import User
 
 from . import db
@@ -14,8 +16,22 @@ auth = Blueprint('auth' , __name__);
 
 @auth.route("/login" , methods = ["GET" , "POST"])
 def login():
-    data = request.form;
-    print(data);
+    if request.method == "POST":
+        email = request.form["email"];
+        password = request.form["password"];
+
+        user = User.query.filter_by(email = email).first();
+
+        if user:
+            if check_password_hash(user.password , password):
+                flash("Logged in successfully" , category="success");
+                return redirect(url_for(views.home))
+            else :
+                flash("Incorrect Password. Please try again!" , category="error");
+        else :
+            flash("User don't exist. Please Sign Up!" , category="error");
+            
+
     return render_template("login.html")
 
 @auth.route("/logout")
@@ -30,7 +46,11 @@ def signun():
         password1 = str(request.form.get("password1"));
         password2 = str(request.form.get("password2"));
 
-        if len(email) < 4:
+        user = User.query.filter_by(email = email).first();
+
+        if user:
+            flash("User already Exists. Please Login!" , category = "error");
+        elif len(email) < 4:
             flash("Please check your email address once again" , category = "error");
         elif len(firstName) < 2:
             flash("Please check your name once again" , category = "error");
