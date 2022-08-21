@@ -26,7 +26,7 @@ class Note(db.Model):
 # For User Login and Sign Up
 class User(db.Model , UserMixin):
     id = db.Column(db.Integer , primary_key = True);
-    email = db.Column(db.string(150) , unique = True);
-    password = db.Column(db.string(150));
-    firstName = db.Column(db.string(150));
+    email = db.Column(db.String(150) , unique = True);
+    password = db.Column(db.String(150));
+    firstName = db.Column(db.String(150));
     notes = db.relationship("Note");

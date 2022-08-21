@@ -11,9 +11,15 @@ from Webpages import initiate_app()
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from os import path
 
 db = SQLAlchemy();
-DB_NAME = database.db;
+DB_NAME = "database.db";
+
+def create_database(app):
+    if not path.exists("Webpages/" + DB_NAME):
+        db.create_all(app = app);
+        print("Database Created")
 
 def initiate_app():
     app = Flask(__name__);
@@ -26,5 +32,10 @@ def initiate_app():
 
     app.register_blueprint(views , url_prefix = "/")
     app.register_blueprint(auth , url_prefix = "/")
+
+    # Importing Database Classes
+    from .models import Note , User
+
+    create_database(app);
 
     return app;
