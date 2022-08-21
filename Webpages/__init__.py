@@ -48,6 +48,6 @@ def initiate_app():
 
     @login_manager.user_loader
     def load_user(id):
-        User.query.get(int(id));
+        return User.query.get(int(id));
 
     return app;
