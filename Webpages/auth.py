@@ -1,6 +1,14 @@
 # This file deals with the authentication of the users
 
-from flask import Blueprint , render_template , request , flash
+from flask import Blueprint , render_template , request , flash , redirect , url_for
+from .models import User
+
+from . import db
+
+# Hashing a password
+from werkzeug.security import generate_password_hash , check_password_hash
+
+from Webpages.models import User
 
 auth = Blueprint('auth' , __name__);
 
@@ -31,6 +39,11 @@ def signun():
         elif len(password1) < 7:
             flash("Passwords is too short! Please enter a password greater than 7 characters" , category = "error");
         else :
+            new_user = User(email = email , firstName = firstName , password = generate_password_hash(password1 , method = "sha256"));
+            db.session.add(new_user);
+            db.session.commit()
             flash("Great! Relax and Take Notes :)" , category = "success");
+
+            return redirect(url_for("views.home"))
 
     return render_template("sign-up.html")
